@@ -1,7 +1,6 @@
 let gulp = require('gulp');
  	connect = require('gulp-connect');
- 	gutil = require('gulp-util')
- 	cors = require('cors');
+ 	gutil = require('gulp-util');
  	sass = require('gulp-sass');
  	uglify = require('gulp-uglify-es').default;
   concat = require('gulp-concat');

@@ -15,7 +15,6 @@
     "gulp-uglify-es": "latest",
     "gulp-concat": "latest",
     "gulp-connect": "latest",
-    "cors": "latest",
     "browser-sync": "latest"
   }
 }
