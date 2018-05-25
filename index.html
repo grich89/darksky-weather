@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <link rel="stylesheet" href="main.css">
+   <title>Dark Sky Weather Feed</title>
+</head>
+
+<body>
+
+	<div class="container">
+
+		<form id="location-form">
+			<input id="location" placeholder="Please enter your zip code." />
+			<button type="submit" id="submit" />Get Weekly Forecast</button>
+		</form>
+
+		<div class="weather"></div>
+
+		<script id="document-template" type="text/x-handlebars-template">
+			{{#each this}}
+				<div class="row">
+					<canvas class="{{icon}}" width="96" height="96"></canvas>
+					<ul>
+						<li><strong>{{day}}</strong></li>
+						<li>{{sum}}</li>
+						<li><b>High Temp:</b> {{high}}</li>
+						<li><b>Low Temp:</b> {{low}}</li>
+					</ul>
+				</div>
+			{{/each}}
+		</script>
+
+	</div>
+
+	<script src="https://www.gstatic.com/firebasejs/5.0.3/firebase.js"></script>
+	<script src="handlebars-v4.0.5.js"></script>
+	<script src="skycons.js"></script>
+	<script src="app.js"></script>
+</body>
+</html>

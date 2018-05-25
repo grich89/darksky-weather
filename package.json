@@ -1,0 +1,21 @@
+{
+  "name": "toast-test",
+  "version": "1.0.0",
+  "description": "front end tech test",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Toast Marketing",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-util": "latest",
+    "gulp-sass": "latest",
+    "gulp-uglify-es": "latest",
+    "gulp-concat": "latest",
+    "gulp-connect": "latest",
+    "cors": "latest",
+    "browser-sync": "latest"
+  }
+}
