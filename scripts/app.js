@@ -57,6 +57,7 @@
 
         // use callback functions to add lat & long from ip-api to darksky api
         function getWeather(coordinates) {
+          const submit = document.getElementById('submit');
           let lat = coordinates.lat;
           let lng = coordinates.lon;
 
@@ -89,7 +90,6 @@
             url = `https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/${dsKey}/${lat},${lng}`;
             ajaxRequest();
           }
-          var submit = document.getElementById('submit');
           submit.addEventListener('click', getCoordinates);
 
           // make the ajax request to Dark Sky
@@ -111,14 +111,11 @@
           // display weather results
           function displayWeather(response) {
             let feed = document.getElementById('document-template');
+            let arr = [];
 
             // grab the daily forecast data
             const days = ((response || {}).daily || {}).data;
             console.log(days);
-
-
-            // empty array which will store formatted weather objects
-            let arr = [];
 
             // increment date by 1 based on today's date, then format
             Date.prototype.addDays = function(days) {
@@ -153,8 +150,6 @@
               arr.push(obj);
             }
 
-            console.log(arr);
-
             // create handlebars template to parse through arr
             const source = feed.innerHTML;
             const template = Handlebars.compile(source);
@@ -170,9 +165,7 @@
               "fog"
             ];
 
-            let i;
-
-            for(i = list.length; i--;) {
+            for(let i = list.length; i--;) {
               const weatherType = list[i];
               const elements = document.getElementsByClassName(weatherType);
               for (e = elements.length; e--;) {
@@ -181,6 +174,7 @@
             }
 
             icons.play();
+
           };
 
           // fire ajaxRequest based on ip address coordinates on page load
