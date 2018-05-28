@@ -1,24 +1,5 @@
 ((() => {
 
-  // user ip lookup was attempted -- below is ajax call
-  // I'm successfully making the api call below & getting lat and long
-  // I just need to separate out the google api call into a separate function, and only call it on the submit event
-
-  /*function ipLookUp() {
-    let request = new XMLHttpRequest();
-    request.open("GET", 'http://ip-api.com/json', true);
-    request.send();
-    request.onreadystatechange = function() {
-      if (this.readyState === 4 && this.status === 200) {
-        let response = JSON.parse(this.responseText);
-        var lat = response.lat;
-        var lng = response.lon;
-        displayWeather(response);
-      }
-    };
-  }
-  ipLookUp();*/
-
   // Initialize Firebase
   const config = {
       apiKey: "AIzaSyCBpCSlpT3wyt1GHDQBhz7PSh7ZFTJFOcs",
@@ -32,14 +13,6 @@
   firebase.initializeApp(config);
   const database = firebase.database();
   const root = database.ref();
-
-  // retrieve zip code
-  let zip = document.getElementById('location');
-  zip.addEventListener("change", e => {
-    zip = e.target.value;
-  });
-
-  document.getElementById('submit').addEventListener('click', buildApp);
 
   // loading
   function showLoading() {
@@ -55,23 +28,20 @@
   }
 
   // build app!
-  function buildApp(e) {
-
-    e.preventDefault();
+  function buildApp() {
 
       // retrieve api keys from firebase
       root.on("value", snapshot => {
         let geoKey = snapshot.child("geoApi").val();
         let dsKey = snapshot.child("dsApi").val();
-        let geo = `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${geoKey}`;
 
         // show loading text
         showLoading();
 
-        // ajax request to geocoding api
-        function getCoordinates() {
+        // make ajax call to the ip-api
+        function ipLookUp() {
           let request = new XMLHttpRequest();
-          request.open("GET", geo, true);
+          request.open("GET", 'http://ip-api.com/json', true);
           request.send();
           request.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
@@ -82,30 +52,58 @@
               showError();
             }
           };
-        };
-        
-        // use callback function to add lat & long to darksky api
+        }
+        ipLookUp();
+
+        // use callback functions to add lat & long from ip-api to darksky api
         function getWeather(coordinates) {
-          let lat = coordinates.results[0].geometry.location.lat;
-          console.log(lat);
-          let lng = coordinates.results[0].geometry.location.lng;
-          console.log(lng);
+          let lat = coordinates.lat;
+          let lng = coordinates.lon;
 
           // pass the coordinates into the Dark Sky api
           let url = `https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/${dsKey}/${lat},${lng}`;
+
+          // ajax request to geocoding api
+          function getCoordinates(e) {
+            e.preventDefault();
+            let zip = document.getElementById('location').value;
+            let geo = `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${geoKey}`;
+            let request = new XMLHttpRequest();
+            request.open("GET", geo, true);
+            request.send();
+            request.onreadystatechange = function() {
+              if (this.readyState === 4 && this.status === 200) {
+                let coordinates = JSON.parse(this.responseText);
+                updateCoordinates(coordinates);
+                hideError();
+              } else {
+                showError();
+              }
+            };
+          };
+
+          // replace ip-based coordinates with geocoding on submit of zip code form
+          function updateCoordinates(coordinates) {
+            lat = coordinates.results[0].geometry.location.lat;
+            lng = coordinates.results[0].geometry.location.lng;
+            url = `https://cors-anywhere.herokuapp.com/https://api.darksky.net/forecast/${dsKey}/${lat},${lng}`;
+            ajaxRequest();
+          }
+          var submit = document.getElementById('submit');
+          submit.addEventListener('click', getCoordinates);
 
           // make the ajax request to Dark Sky
           function ajaxRequest() {
             let request = new XMLHttpRequest();
             console.log(url);
             request.open("GET", url, true);
-            request.setRequestHeader("Access-Control-Allow-Origin", "*");
             request.send();
             request.onreadystatechange = function() {
               if (this.readyState === 4 && this.status === 200) {
                 let response = JSON.parse(this.responseText);
-                console.log(response);
                 displayWeather(response);
+              } else {
+                showError();
               }
             }
           };
@@ -185,13 +183,13 @@
             icons.play();
           };
 
+          // fire ajaxRequest based on ip address coordinates on page load
           ajaxRequest();
 
         };
-
-        getCoordinates();
       
     });
     
   };
+  buildApp();
 }))();
